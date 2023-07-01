@@ -27,10 +27,10 @@ public class OrderBookTest {
     public void addOrderTest(){
         Order order = new Order();
         order.setSide(Side.BUY);
-        order.setPrice("101.34");
+        order.setPrice(101.34F);
         order.setTimestamp(Date.from(Instant.now()));
         order.setClientId("client1");
-        order.setQuantity("45");
+        order.setQuantity(23.76F);
 
         assertThat(orderBook.addOrder(order)).isNotNull();
     }
