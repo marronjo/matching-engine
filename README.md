@@ -1,5 +1,5 @@
 <a href="https://github.com/marronjo/matching-engine/actions/workflows/maven.yml">
-    <img alt="build" src="https://github.com/marronjo/matching-engine/actions/workflows/maven.yml/badge.svg">
+    <img alt="tests" src="https://github.com/marronjo/matching-engine/actions/workflows/maven.yml/badge.svg">
 </a>
 
 # matching-engine
