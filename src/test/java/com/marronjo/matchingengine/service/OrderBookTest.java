@@ -36,7 +36,7 @@ public class OrderBookTest {
         order.setClientId("client1");
         order.setQuantity(23.76F);
 
-        assertThat(orderBook.addOrder(order)).isNull();
+        assertThat(orderBook.addOrder(order)).isNotNull();
     }
 
     @Test
