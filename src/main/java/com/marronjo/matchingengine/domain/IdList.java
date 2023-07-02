@@ -31,6 +31,7 @@ public class IdList<S extends Sorter, M extends Matcher> extends ArrayList<Long>
 
     public List<Long> matchOrders(ConcurrentHashMap<Long, Order> orders, Long newTxId, Order newOrder){
         ArrayList<Long> ordersToMatch = new ArrayList<>();
+        ArrayList<Long> ordersToRemove = new ArrayList<>();
         for(Long id: this){
             Order order = orders.get(id);
             Tuple<Boolean, Integer> canMatch = matcher.checkMatch(order, newOrder);
@@ -39,7 +40,7 @@ public class IdList<S extends Sorter, M extends Matcher> extends ArrayList<Long>
             Integer matchType = canMatch.getVal2();
             while(stillMatching){
                 if(matchType == 0) {
-                    this.remove(id);
+                    ordersToRemove.add(id);
                     orders.remove(id);
                     orders.remove(newTxId);
                     ordersToMatch.add(newTxId);
@@ -53,13 +54,14 @@ public class IdList<S extends Sorter, M extends Matcher> extends ArrayList<Long>
                     stillMatching = false;
                 }
                 else {
-                    this.remove(id);
+                    ordersToRemove.add(id);
                     orders.remove(id);
                     order.setQuantity(newOrder.getQuantity() - order.getQuantity());
                     orders.put(newTxId, order);
                 }
             }
         }
+        ordersToRemove.forEach(this::remove);
         return ordersToMatch;
     }
 }

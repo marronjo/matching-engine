@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OrderBook {
     private final String ticker;
     private final ConcurrentHashMap<Long, Order> orders;
-    private IdList<BuySorter, BuyMatcher> sortedBuyIds;
-    private IdList<SellSorter, SellMatcher> sortedSellIds;
+    private IdList<Sorter, Matcher> sortedBuyIds;
+    private IdList<Sorter, Matcher> sortedSellIds;
 
     private final Random random;
 
@@ -32,6 +32,17 @@ public class OrderBook {
         sortedSellIds = new IdList<>(new SellSorter(), new SellMatcher());
 
         random = new Random();
+    }
+
+    public List<Order> getOrders(Side side){
+        if(side == Side.BUY) return aggregateOrders(sortedBuyIds);
+        return aggregateOrders(sortedSellIds);
+    }
+
+    private List<Order> aggregateOrders(IdList<Sorter, Matcher> idList){
+        List<Order> aggregatedOrders = new ArrayList<>();
+        idList.forEach(id -> aggregatedOrders.add(orders.get(id)));
+        return aggregatedOrders;
     }
 
     public Long addOrder(Order order){
