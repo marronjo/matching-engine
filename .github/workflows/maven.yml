@@ -27,9 +27,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-
+    - name: Run Tests and Collect Coverage
+      run: mvn -B test
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
       with:
