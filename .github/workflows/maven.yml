@@ -35,5 +35,4 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         directory: ./coverage/reports/
-        files: /home/runner/work/matching-engine/matching-engine/coverage.xml
-
+        files: /home/runner/work/matching-engine/matching-engine/coverage.yml
