@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OrderBook {
     private final String ticker;
     private final ConcurrentHashMap<Long, Order> orders;
-    private IdList<Sorter, Matcher> sortedBuyIds;
-    private IdList<Sorter, Matcher> sortedSellIds;
+    private final IdList<Sorter, Matcher> sortedBuyIds;
+    private final IdList<Sorter, Matcher> sortedSellIds;
 
     private final Random random;
 
