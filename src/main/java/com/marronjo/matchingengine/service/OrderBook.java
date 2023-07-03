@@ -2,14 +2,11 @@ package com.marronjo.matchingengine.service;
 
 import com.marronjo.matchingengine.domain.IdList;
 import com.marronjo.matchingengine.domain.Order;
+import com.marronjo.matchingengine.domain.OrderMap;
 import com.marronjo.matchingengine.domain.Side;
-import com.marronjo.matchingengine.service.match.BuyMatcher;
-import com.marronjo.matchingengine.service.match.Matcher;
-import com.marronjo.matchingengine.service.match.SellMatcher;
 import com.marronjo.matchingengine.service.sort.BuySorter;
 import com.marronjo.matchingengine.service.sort.SellSorter;
 import com.marronjo.matchingengine.service.sort.Sorter;
-import org.jgroups.util.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,18 +15,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class OrderBook {
     private final String ticker;
-    private final ConcurrentHashMap<Long, Order> orders;
-    private final IdList<Sorter, Matcher> sortedBuyIds;
-    private final IdList<Sorter, Matcher> sortedSellIds;
+    private final OrderMap orderMap;
+    private final IdList<Sorter> sortedBuyIds;
+    private final IdList<Sorter> sortedSellIds;
 
     private final Random random;
 
     public OrderBook(String ticker){
         this.ticker = ticker;
-
-        orders = new ConcurrentHashMap<>();
-        sortedBuyIds = new IdList<>(new BuySorter(), new BuyMatcher());
-        sortedSellIds = new IdList<>(new SellSorter(), new SellMatcher());
+        orderMap = new OrderMap();
+        sortedBuyIds = new IdList<>(new BuySorter());
+        sortedSellIds = new IdList<>(new SellSorter());
 
         random = new Random();
     }
@@ -39,9 +35,9 @@ public class OrderBook {
         return aggregateOrders(sortedSellIds);
     }
 
-    private List<Order> aggregateOrders(IdList<Sorter, Matcher> idList){
+    private List<Order> aggregateOrders(IdList<Sorter> idList){
         List<Order> aggregatedOrders = new ArrayList<>();
-        idList.forEach(id -> aggregatedOrders.add(orders.get(id)));
+        idList.forEach(id -> aggregatedOrders.add(orderMap.get(id)));
         return aggregatedOrders;
     }
 
@@ -50,13 +46,13 @@ public class OrderBook {
         Long newTxId = 0L;
         while(!newId){
             newTxId = random.nextLong();
-            if(orders.get(newTxId) == null){
+            if(orderMap.get(newTxId) == null){
                 if(order.getSide() == Side.BUY){
-                    orders.put(newTxId, order);
+                    orderMap.put(newTxId, order);
                     newId = true;
                 }
                 else if (order.getSide() == Side.SELL){
-                    orders.put(newTxId, order);
+                    orderMap.put(newTxId, order);
                     newId = true;
                 }
             }
@@ -68,8 +64,8 @@ public class OrderBook {
     }
 
     private boolean sort(Order newOrder, Long newTxId) {
-        if(newOrder.getSide() == Side.BUY) return sortedBuyIds.sortIds(orders, newTxId, newOrder);
-        return sortedSellIds.sortIds(orders, newTxId, newOrder);
+        if(newOrder.getSide() == Side.BUY) return sortedBuyIds.sortIds(orderMap, newTxId, newOrder);
+        return sortedSellIds.sortIds(orderMap, newTxId, newOrder);
     }
 
     private void checkMatch(Order order, Long newTxId){
@@ -80,7 +76,7 @@ public class OrderBook {
     }
 
     private List<Long> getOrdersToMatch(Order order, Long newTxId){
-        if(order.getSide() == Side.BUY) return sortedSellIds.matchOrders(orders, newTxId, order);
-        return sortedBuyIds.matchOrders(orders, newTxId, order);
+        if(order.getSide() == Side.BUY) return orderMap.matchOrders(sortedSellIds, newTxId, order);
+        return orderMap.matchOrders(sortedBuyIds, newTxId, order);
     }
 }
