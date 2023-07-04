@@ -19,7 +19,7 @@ public class OrderMap extends ConcurrentHashMap<Long, Order> {
         return new Tuple<>(false,0);
     }
 
-    public Tuple<Boolean, Integer> checkSellMatch(Order sellOrder, Order buyOrder) {
+    private Tuple<Boolean, Integer> checkSellMatch(Order sellOrder, Order buyOrder) {
         if(buyOrder.getPrice().compareTo(sellOrder.getPrice()) >= 0){
             return new Tuple<>(true,buyOrder.getQuantity().compareTo(sellOrder.getQuantity()));
         }
@@ -36,6 +36,10 @@ public class OrderMap extends ConcurrentHashMap<Long, Order> {
             boolean stillMatching = true;
             Integer matchType = canMatch.getVal2();
             while(stillMatching){
+                canMatch = checkMatch(order, newOrder);
+                if(!canMatch.getVal1()) {
+                    break;
+                }
                 if(matchType == 0) {
                     ordersToRemove.add(id);
                     this.remove(id);
@@ -44,17 +48,17 @@ public class OrderMap extends ConcurrentHashMap<Long, Order> {
                     stillMatching = false;
                 }
                 else if (matchType < 0){
-                    order.setQuantity(order.getQuantity() - newOrder.getQuantity());
+                    order.setQuantity(newOrder.getQuantity() - order.getQuantity());
                     this.put(id, order);
                     this.remove(newTxId);
                     ordersToMatch.add(newTxId);
-                    stillMatching = false;
                 }
                 else {
                     ordersToRemove.add(id);
                     this.remove(id);
-                    order.setQuantity(newOrder.getQuantity() - order.getQuantity());
+                    order.setQuantity(order.getQuantity() - newOrder.getQuantity());
                     this.put(newTxId, order);
+                    stillMatching = false;
                 }
             }
         }
