@@ -1,7 +1,6 @@
 package com.marronjo.matchingengine.domain;
 
 import com.marronjo.matchingengine.service.sort.Sorter;
-import org.jgroups.util.Tuple;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

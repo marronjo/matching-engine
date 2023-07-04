@@ -20,7 +20,7 @@ public class OrderMap extends ConcurrentHashMap<Long, Order> {
     }
 
     public Tuple<Boolean, Integer> checkSellMatch(Order sellOrder, Order buyOrder) {
-        if(buyOrder.getPrice().compareTo(sellOrder.getPrice()) <= 0){
+        if(buyOrder.getPrice().compareTo(sellOrder.getPrice()) >= 0){
             return new Tuple<>(true,buyOrder.getQuantity().compareTo(sellOrder.getQuantity()));
         }
         return new Tuple<>(false,0);
