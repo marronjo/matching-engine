@@ -115,6 +115,29 @@ public class OrderMapTest {
         assertThat(orderMap.get(sellSideTxId).getQuantity()).isEqualTo(sellSideAmount-buySideAmount);
     }
 
+    @Test
+    public void newOrderPartialMatchSellSideTest(){
+        Float sellSideAmount = random.nextFloat(650, 900);
+        Long sellSideTxId = 98346098L;
+        Order sellSide = createRandomOrder(Side.SELL, 99.23F, sellSideAmount);
+
+        Float buySideAmount = random.nextFloat(900, 1300);
+        Long buySideTxId = 23476532L;
+        Order buySide = createRandomOrder(Side.BUY, 100.75F, buySideAmount);
+
+        orderMap.put(sellSideTxId, sellSide);
+        orderMap.put(buySideTxId, buySide);
+
+        sellSideIds.add(sellSideTxId);
+        buySideIds.add(buySideTxId);
+
+        List<Long> buyIdsToMatch = orderMap.matchOrders(sellSideIds, buySideTxId, buySide);
+
+        assertThat(buyIdsToMatch.isEmpty()).isTrue();
+
+        assertThat(orderMap.get(buySideTxId).getQuantity()).isEqualTo(buySideAmount-sellSideAmount);
+    }
+
     private Order createRandomOrder(Side side, Float price, Float quantity){
         return new Order(
                 "client",
