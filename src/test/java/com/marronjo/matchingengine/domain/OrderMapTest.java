@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,6 +22,8 @@ public class OrderMapTest {
     private IdList<Sorter> buySideIds;
     @InjectMocks
     private IdList<Sorter> sellSideIds;
+
+    private final Random random = new Random();
 
     @Test
     public void matchOrdersEqualExistingBuySideTest(){
@@ -64,12 +67,15 @@ public class OrderMapTest {
         assertThat(orderMap).isEmpty();
     }
 
-    //@Test
+    @Test
     public void partialMatchExistingBuySideTest(){
-        Order buySide = createRandomOrder(Side.BUY, 96.75F, 150F);
+        Float buySideAmount = random.nextFloat(150, 200);
         Long buySideTxId = 72304974L;
-        Order sellSide = createRandomOrder(Side.SELL, 96.34F, 70F);
+        Order buySide = createRandomOrder(Side.BUY, 96.75F, buySideAmount);
+
+        Float sellSideAmount = random.nextFloat(100, 150);
         Long sellSideTxId = 496983753L;
+        Order sellSide = createRandomOrder(Side.SELL, 96.34F, sellSideAmount);
 
         orderMap.put(sellSideTxId, sellSide);
         orderMap.put(buySideTxId, buySide);
@@ -82,7 +88,31 @@ public class OrderMapTest {
         assertThat(sellIdsToMatch.size()).isEqualTo(1);
         assertThat(sellIdsToMatch.get(0)).isEqualTo(sellSideTxId);
 
-        assertThat(orderMap.get(sellSideTxId).getQuantity()).isEqualTo(buySide.getQuantity()-sellSide.getQuantity());
+        assertThat(orderMap.get(buySideTxId).getQuantity()).isEqualTo(buySideAmount-sellSideAmount);
+    }
+
+    @Test
+    public void partialMatchExistingSellSideTest(){
+        Float sellSideAmount = random.nextFloat(900, 1300);
+        Long sellSideTxId = 98346098L;
+        Order sellSide = createRandomOrder(Side.SELL, 99.23F, sellSideAmount);
+
+        Float buySideAmount = random.nextFloat(650, 900);
+        Long buySideTxId = 23476532L;
+        Order buySide = createRandomOrder(Side.BUY, 100.75F, buySideAmount);
+
+        orderMap.put(sellSideTxId, sellSide);
+        orderMap.put(buySideTxId, buySide);
+
+        sellSideIds.add(sellSideTxId);
+        buySideIds.add(buySideTxId);
+
+        List<Long> buyIdsToMatch = orderMap.matchOrders(sellSideIds, buySideTxId, buySide);
+
+        assertThat(buyIdsToMatch.size()).isEqualTo(1);
+        assertThat(buyIdsToMatch.get(0)).isEqualTo(buySideTxId);
+
+        assertThat(orderMap.get(sellSideTxId).getQuantity()).isEqualTo(sellSideAmount-buySideAmount);
     }
 
     private Order createRandomOrder(Side side, Float price, Float quantity){
