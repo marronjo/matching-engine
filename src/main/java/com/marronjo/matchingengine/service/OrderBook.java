@@ -40,13 +40,13 @@ public class OrderBook {
         while(!newId){
             newOrderId = random.nextLong(1000000, 9000000);
             if(orderMap.get(newOrderId) == null){
-                if(sort(order)){
-                    checkMatch(order);
-                }
                 order.setOrderId(newOrderId);
                 orderMap.put(newOrderId, order);
                 newId = true;
             }
+        }
+        if(sort(order)){
+            checkMatch(order);
         }
         return newOrderId;
     }
