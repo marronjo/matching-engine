@@ -42,6 +42,7 @@ public class OrderBookService {
 
     public AggregatedOrderbook getOrderBook(String ticker){
         OrderBook orderBook = orderBooks.get(ticker);
+        if(orderBook == null) return null;
         return new AggregatedOrderbook(ticker, orderBook.getOrders(Side.BUY), orderBook.getOrders(Side.SELL));
     }
 }
