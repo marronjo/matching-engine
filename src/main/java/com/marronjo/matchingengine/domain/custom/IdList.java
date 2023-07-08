@@ -12,7 +12,7 @@ public class IdList<S extends Sorter> extends ArrayList<Long> {
         this.sorter = sorter;
     }
 
-    public boolean sortIds(ConcurrentHashMap<Long, Order> orders, Long newTxId, Order newOrder) {
+    public boolean sortIds(ConcurrentHashMap<Long, Order> orders, Order newOrder) {
         int index = 0;
         for (Long id : this) {
             Order order = orders.get(id);
@@ -21,7 +21,7 @@ public class IdList<S extends Sorter> extends ArrayList<Long> {
             }
             index++;
         }
-        this.add(index, newTxId);
+        this.add(index, newOrder.getOrderId());
         return index == 0;
     }
 }

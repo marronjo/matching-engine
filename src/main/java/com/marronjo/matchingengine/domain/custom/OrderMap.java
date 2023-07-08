@@ -6,9 +6,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class OrderMap extends ConcurrentHashMap<Long, Order> {
 
-    public List<Long> matchOrders(ArrayList<Long> idList, Long newTxId, Order newOrder){
+    public List<Long> matchOrders(ArrayList<Long> idList, Order newOrder){
         ArrayList<Long> ordersToMatch = new ArrayList<>();
         ArrayList<Long> ordersToRemove = new ArrayList<>();
+        Long newOrderId = newOrder.getOrderId();
         boolean breakLoop = false;
         for(Long id: idList){
             Order order = this.get(id);
@@ -19,12 +20,12 @@ public class OrderMap extends ConcurrentHashMap<Long, Order> {
                 case EQUAL_FILL -> {
                     ordersToRemove.add(id);
                     this.remove(id);
-                    this.remove(newTxId);
-                    ordersToMatch.add(newTxId);
+                    this.remove(newOrderId);
+                    ordersToMatch.add(newOrderId);
                 }
                 case EXISTING_ORDER_PARTIAL_FILL -> {
-                    ordersToMatch.add(newTxId);
-                    this.remove(newTxId);
+                    ordersToMatch.add(newOrderId);
+                    this.remove(newOrderId);
                     order.setQuantity(order.getQuantity() - newOrder.getQuantity());
                     this.put(id, order);
                 }
@@ -32,7 +33,7 @@ public class OrderMap extends ConcurrentHashMap<Long, Order> {
                     ordersToRemove.add(id);
                     this.remove(id);
                     newOrder.setQuantity(newOrder.getQuantity() - order.getQuantity());
-                    this.put(newTxId, newOrder);
+                    this.put(newOrderId, newOrder);
                 }
             }
             if(breakLoop) break;
