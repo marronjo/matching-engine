@@ -9,6 +9,6 @@ public class SellSorter implements Sorter {
             return true;
         }
         return newOrder.getPrice().compareTo(order.getPrice()) == 0
-                || newOrder.getTimestamp().compareTo(order.getTimestamp()) < 0;
+                && newOrder.getTimestamp().compareTo(order.getTimestamp()) < 0;
     }
 }
