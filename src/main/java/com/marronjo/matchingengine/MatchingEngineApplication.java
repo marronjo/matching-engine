@@ -1,9 +1,14 @@
 package com.marronjo.matchingengine;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
+@EnableSwagger2
+@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class MatchingEngineApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MatchingEngineApplication.class, args);

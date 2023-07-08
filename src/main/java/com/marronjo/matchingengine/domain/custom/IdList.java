@@ -1,5 +1,6 @@
-package com.marronjo.matchingengine.domain;
+package com.marronjo.matchingengine.domain.custom;
 
+import com.marronjo.matchingengine.domain.orders.Order;
 import com.marronjo.matchingengine.service.sort.Sorter;
 
 import java.util.*;

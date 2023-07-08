@@ -1,4 +1,8 @@
-package com.marronjo.matchingengine.domain;
+package com.marronjo.matchingengine.domain.custom;
+
+import com.marronjo.matchingengine.domain.enums.FillType;
+import com.marronjo.matchingengine.domain.orders.Order;
+import com.marronjo.matchingengine.domain.enums.Side;
 
 import java.util.ArrayList;
 import java.util.List;

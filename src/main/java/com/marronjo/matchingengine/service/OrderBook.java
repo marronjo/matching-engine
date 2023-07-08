@@ -1,9 +1,9 @@
 package com.marronjo.matchingengine.service;
 
-import com.marronjo.matchingengine.domain.IdList;
-import com.marronjo.matchingengine.domain.Order;
-import com.marronjo.matchingengine.domain.OrderMap;
-import com.marronjo.matchingengine.domain.Side;
+import com.marronjo.matchingengine.domain.custom.IdList;
+import com.marronjo.matchingengine.domain.orders.Order;
+import com.marronjo.matchingengine.domain.custom.OrderMap;
+import com.marronjo.matchingengine.domain.enums.Side;
 import com.marronjo.matchingengine.service.sort.BuySorter;
 import com.marronjo.matchingengine.service.sort.SellSorter;
 import com.marronjo.matchingengine.service.sort.Sorter;
@@ -34,48 +34,43 @@ public class OrderBook {
         return aggregateOrders(sortedSellIds);
     }
 
+    public Long addOrder(Order order){
+        boolean newId = false;
+        Long newOrderId = 0L;
+        while(!newId){
+            newOrderId = random.nextLong(1000000, 9000000);
+            if(orderMap.get(newOrderId) == null){
+                if(sort(order)){
+                    checkMatch(order);
+                }
+                order.setOrderId(newOrderId);
+                orderMap.put(newOrderId, order);
+                newId = true;
+            }
+        }
+        return newOrderId;
+    }
+
     private List<Order> aggregateOrders(IdList<Sorter> idList){
         List<Order> aggregatedOrders = new ArrayList<>();
         idList.forEach(id -> aggregatedOrders.add(orderMap.get(id)));
         return aggregatedOrders;
     }
 
-    public Long addOrder(Order order){
-        boolean newId = false;
-        Long newTxId = 0L;
-        while(!newId){
-            newTxId = random.nextLong();
-            if(orderMap.get(newTxId) == null){
-                if(order.getSide() == Side.BUY){
-                    orderMap.put(newTxId, order);
-                    newId = true;
-                }
-                else if (order.getSide() == Side.SELL){
-                    orderMap.put(newTxId, order);
-                    newId = true;
-                }
-            }
-        }
-        if(sort(order, newTxId)){
-            checkMatch(order, newTxId);
-        }
-        return newTxId;
+    private boolean sort(Order newOrder) {
+        if(newOrder.getSide() == Side.BUY) return sortedBuyIds.sortIds(orderMap, newOrder);
+        return sortedSellIds.sortIds(orderMap, newOrder);
     }
 
-    private boolean sort(Order newOrder, Long newTxId) {
-        if(newOrder.getSide() == Side.BUY) return sortedBuyIds.sortIds(orderMap, newTxId, newOrder);
-        return sortedSellIds.sortIds(orderMap, newTxId, newOrder);
-    }
-
-    private void checkMatch(Order order, Long newTxId){
-        for(Long id: getOrdersToMatch(order, newTxId)){
+    private void checkMatch(Order order){
+        for(Long id: getOrdersToMatch(order)){
             if(order.getSide() == Side.BUY) sortedBuyIds.remove(id);
             else sortedSellIds.remove(id);
         }
     }
 
-    private List<Long> getOrdersToMatch(Order order, Long newTxId){
-        if(order.getSide() == Side.BUY) return orderMap.matchOrders(sortedSellIds, newTxId, order);
-        return orderMap.matchOrders(sortedBuyIds, newTxId, order);
+    private List<Long> getOrdersToMatch(Order order){
+        if(order.getSide() == Side.BUY) return orderMap.matchOrders(sortedSellIds, order);
+        return orderMap.matchOrders(sortedBuyIds, order);
     }
 }

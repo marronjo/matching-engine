@@ -1,4 +1,4 @@
-package com.marronjo.matchingengine.domain;
+package com.marronjo.matchingengine.domain.enums;
 
 public enum FillType {
     NO_FILL,

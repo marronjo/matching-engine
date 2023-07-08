@@ -1,5 +1,9 @@
 package com.marronjo.matchingengine.domain;
 
+import com.marronjo.matchingengine.domain.custom.IdList;
+import com.marronjo.matchingengine.domain.custom.OrderMap;
+import com.marronjo.matchingengine.domain.enums.Side;
+import com.marronjo.matchingengine.domain.orders.Order;
 import com.marronjo.matchingengine.service.sort.Sorter;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,9 +32,10 @@ public class OrderMapTest {
     @Test
     public void matchOrdersEqualExistingBuySideTest(){
         Order buySide = createRandomOrder(Side.BUY, 450F, 35F);
-        Long buySideTxId = 987342985L;
         Order sellSide = createRandomOrder(Side.SELL, 450F, 35F);
-        Long sellSideTxId = 2349879584L;
+
+        Long buySideTxId = buySide.getOrderId();
+        Long sellSideTxId = sellSide.getOrderId();
 
         orderMap.put(buySideTxId, buySide);
         orderMap.put(sellSideTxId, sellSide);
@@ -38,7 +43,7 @@ public class OrderMapTest {
         buySideIds.add(buySideTxId);
         sellSideIds.add(sellSideTxId);
 
-        List<Long> sellIdsToMatch = orderMap.matchOrders(buySideIds, sellSideTxId, sellSide);
+        List<Long> sellIdsToMatch = orderMap.matchOrders(buySideIds, sellSide);
 
         assertThat(sellIdsToMatch.size()).isEqualTo(1);
         assertThat(sellIdsToMatch.get(0)).isEqualTo(sellSideTxId);
@@ -49,9 +54,10 @@ public class OrderMapTest {
     @Test
     public void matchOrdersEqualExistingSellSideTest(){
         Order sellSide = createRandomOrder(Side.SELL, 450F, 35F);
-        Long sellSideTxId = 9273845398L;
         Order buySide = createRandomOrder(Side.BUY, 450F, 35F);
-        Long buySideTxId = 330975732L;
+
+        Long buySideTxId = buySide.getOrderId();
+        Long sellSideTxId = sellSide.getOrderId();
 
         orderMap.put(sellSideTxId, sellSide);
         orderMap.put(buySideTxId, buySide);
@@ -59,7 +65,7 @@ public class OrderMapTest {
         sellSideIds.add(sellSideTxId);
         buySideIds.add(buySideTxId);
 
-        List<Long> buyIdsToMatch = orderMap.matchOrders(sellSideIds, buySideTxId, buySide);
+        List<Long> buyIdsToMatch = orderMap.matchOrders(sellSideIds, buySide);
 
         assertThat(buyIdsToMatch.size()).isEqualTo(1);
         assertThat(buyIdsToMatch.get(0)).isEqualTo(buySideTxId);
@@ -70,12 +76,13 @@ public class OrderMapTest {
     @Test
     public void partialMatchExistingBuySideTest(){
         Float buySideAmount = random.nextFloat(150, 200);
-        Long buySideTxId = 72304974L;
         Order buySide = createRandomOrder(Side.BUY, 96.75F, buySideAmount);
 
         Float sellSideAmount = random.nextFloat(100, 150);
-        Long sellSideTxId = 496983753L;
         Order sellSide = createRandomOrder(Side.SELL, 96.34F, sellSideAmount);
+
+        Long buySideTxId = buySide.getOrderId();
+        Long sellSideTxId = sellSide.getOrderId();
 
         orderMap.put(sellSideTxId, sellSide);
         orderMap.put(buySideTxId, buySide);
@@ -83,7 +90,7 @@ public class OrderMapTest {
         sellSideIds.add(sellSideTxId);
         buySideIds.add(buySideTxId);
 
-        List<Long> sellIdsToMatch = orderMap.matchOrders(buySideIds, sellSideTxId, sellSide);
+        List<Long> sellIdsToMatch = orderMap.matchOrders(buySideIds, sellSide);
 
         assertThat(sellIdsToMatch.size()).isEqualTo(1);
         assertThat(sellIdsToMatch.get(0)).isEqualTo(sellSideTxId);
@@ -94,12 +101,13 @@ public class OrderMapTest {
     @Test
     public void partialMatchExistingSellSideTest(){
         Float sellSideAmount = random.nextFloat(900, 1300);
-        Long sellSideTxId = 98346098L;
         Order sellSide = createRandomOrder(Side.SELL, 99.23F, sellSideAmount);
 
         Float buySideAmount = random.nextFloat(650, 900);
-        Long buySideTxId = 23476532L;
         Order buySide = createRandomOrder(Side.BUY, 100.75F, buySideAmount);
+
+        Long buySideTxId = buySide.getOrderId();
+        Long sellSideTxId = sellSide.getOrderId();
 
         orderMap.put(sellSideTxId, sellSide);
         orderMap.put(buySideTxId, buySide);
@@ -107,7 +115,7 @@ public class OrderMapTest {
         sellSideIds.add(sellSideTxId);
         buySideIds.add(buySideTxId);
 
-        List<Long> buyIdsToMatch = orderMap.matchOrders(sellSideIds, buySideTxId, buySide);
+        List<Long> buyIdsToMatch = orderMap.matchOrders(sellSideIds, buySide);
 
         assertThat(buyIdsToMatch.size()).isEqualTo(1);
         assertThat(buyIdsToMatch.get(0)).isEqualTo(buySideTxId);
@@ -131,7 +139,7 @@ public class OrderMapTest {
         sellSideIds.add(sellSideTxId);
         buySideIds.add(buySideTxId);
 
-        List<Long> buyIdsToMatch = orderMap.matchOrders(sellSideIds, buySideTxId, buySide);
+        List<Long> buyIdsToMatch = orderMap.matchOrders(sellSideIds, buySide);
 
         assertThat(buyIdsToMatch.isEmpty()).isTrue();
 
@@ -140,7 +148,7 @@ public class OrderMapTest {
 
     private Order createRandomOrder(Side side, Float price, Float quantity){
         return new Order(
-                "client",
+                random.nextLong(),
                 quantity,
                 price,
                 side,

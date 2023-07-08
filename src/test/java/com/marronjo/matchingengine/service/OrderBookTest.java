@@ -1,7 +1,7 @@
 package com.marronjo.matchingengine.service;
 
-import com.marronjo.matchingengine.domain.Order;
-import com.marronjo.matchingengine.domain.Side;
+import com.marronjo.matchingengine.domain.orders.Order;
+import com.marronjo.matchingengine.domain.enums.Side;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -33,7 +33,7 @@ public class OrderBookTest {
         order.setSide(Side.BUY);
         order.setPrice(101.34F);
         order.setTimestamp(Date.from(Instant.now()));
-        order.setClientId("client1");
+        order.setOrderId(1903495L);
         order.setQuantity(23.76F);
 
         assertThat(orderBook.addOrder(order)).isNotNull();
@@ -98,7 +98,7 @@ public class OrderBookTest {
 
     private Order createSingleRandomOrder(Side side){
         return new Order(
-                "client" + random.nextInt(),
+                random.nextLong(),
                 random.nextFloat(),
                 random.nextFloat(),
                 side,
@@ -108,7 +108,7 @@ public class OrderBookTest {
 
     private Order createSingleRandomOrder(Side side, Float price){
         return new Order(
-                "client" + random.nextInt(),
+                random.nextLong(),
                 random.nextFloat(),
                 price,
                 side,
@@ -118,7 +118,7 @@ public class OrderBookTest {
 
     private Order createSingleRandomOrder(Side side, Float price, Float quantity){
         return new Order(
-                "client" + random.nextInt(),
+                random.nextLong(),
                 quantity,
                 price,
                 side,

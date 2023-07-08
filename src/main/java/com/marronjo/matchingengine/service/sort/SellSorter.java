@@ -1,6 +1,6 @@
 package com.marronjo.matchingengine.service.sort;
 
-import com.marronjo.matchingengine.domain.Order;
+import com.marronjo.matchingengine.domain.orders.Order;
 
 public class SellSorter implements Sorter {
     @Override
