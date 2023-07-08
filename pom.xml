@@ -102,7 +102,7 @@
 				<version>0.8.10</version>
 				<configuration>
 					<excludes>
-						<exclude>com/marronjo/matchingengine/MatchingEngineApplication.java</exclude>
+						<exclude>com/marronjo/matchingengine/MatchingEngineApplication.class</exclude>
 					</excludes>
 				</configuration>
 				<executions>
