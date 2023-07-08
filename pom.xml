@@ -103,6 +103,7 @@
 				<configuration>
 					<excludes>
 						<exclude>com/marronjo/matchingengine/MatchingEngineApplication.class</exclude>
+						<exclude>com/marronjo/matchingengine/service/AutoTrader.class</exclude>
 					</excludes>
 				</configuration>
 				<executions>
