@@ -61,5 +61,36 @@ public class SellSorterTest {
         assertThat(sellSorter.checkOrder(order1, order2)).isFalse();
         assertThat(sellSorter.checkOrder(order2, order1)).isFalse();
     }
+
+    @Test
+    public void sellOrderSameTimestampDiffPriceTest(){
+        Date d1 = Date.from(Instant.now());
+
+        Order order1 = new Order();
+        order1.setPrice(95F);
+        order1.setTimestamp(d1);
+
+        Order order2 = new Order();
+        order2.setPrice(100F);
+        order2.setTimestamp(d1);
+
+        assertThat(sellSorter.checkOrder(order1, order2)).isFalse();
+    }
+
+    @Test
+    public void sellOrderDiffTimestampDiffPriceTest(){
+        Date d1 = Date.from(Instant.now());
+        Date d2 = Date.from(Instant.now().plusSeconds(2L));
+
+        Order order1 = new Order();
+        order1.setPrice(95F);
+        order1.setTimestamp(d1);
+
+        Order order2 = new Order();
+        order2.setPrice(100F);
+        order2.setTimestamp(d2);
+
+        assertThat(sellSorter.checkOrder(order1, order2)).isFalse();
+    }
 }
 
