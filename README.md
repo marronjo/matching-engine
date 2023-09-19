@@ -6,4 +6,8 @@
 </a>
 
 # matching-engine
-Efficient concurrent matching engine built in Java, with Springboot, MQ, Kafka and Postgres SQL
+Trade matching engine built in Java, with Springboot.
+To Do:
+1. Add MQ messaging for async communication
+2. Save Completed orders in Postgres DB, for audit logs
+3. Improve SWagger Docs
